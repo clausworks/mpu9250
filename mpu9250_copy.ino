@@ -44,17 +44,19 @@ We are also using the 400 kHz fast I2C mode by setting the TWI_FREQ  to 400000L 
 * K  -------------- GND (w/ 220-Ohm resistor)
 */
 
+#define AHRS true         // set to false for basic data read
+#define SerialDebug true   // set to true to get Serial output for debugging
+bool VERBOSE = false;
+bool LCD_ON = true;
+
 #include <SPI.h>
 #include <Wire.h>
 #include <LiquidCrystal.h>
 #include "magRegisters.h"
 #include "vars.h"
 #include "functions.h"
-
-#define AHRS true         // set to false for basic data read
-#define SerialDebug true   // set to true to get Serial output for debugging
-bool VERBOSE = false;
-bool LCD_ON = true;
+#include "quaternionFilters.h"
+#include "absoluteMagnetoCalib.h"
 
 // lcd
 LiquidCrystal lcd(3,4,5,6,7,8);
