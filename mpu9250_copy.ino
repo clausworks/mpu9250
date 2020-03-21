@@ -59,7 +59,15 @@ bool LCD_ON = true;
 // lcd
 LiquidCrystal lcd(3,4,5,6,7,8);
 
-void setup()
+void setup() {
+    setupMPU();
+}
+
+void loop() {
+    updateMPU();
+}
+
+void setupMPU()
 {
     lcd.begin(16,2);
     Wire.begin();
@@ -201,7 +209,7 @@ void setup()
     }
 }
 
-void loop()
+void updateMPU()
 {
     // If intPin goes high, all data registers have new data
     if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {  // On interrupt, check if data ready interrupt
