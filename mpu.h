@@ -23,24 +23,6 @@ We have disabled the internal pull-ups used by the Wire library in the Wire.h/tw
 We are also using the 400 kHz fast I2C mode by setting the TWI_FREQ  to 400000L /twi.h utility file.
 */
 
-
-/*
-* Also using LCD_1602 display
-* LCD_1602 --------- Arduino Uno
-* VSS ------------- 5V
-* VDD ------------- GND
-* V0 -------------- 5V (w/ 2K-Ohm resistor)
-* RS -------------- 3
-* RW -------------- 5V
-* E  -------------- 4
-* D4 -------------- 5
-* D5 -------------- 6
-* D6 -------------- 7
-* D7 -------------- 8
-* A  -------------- 5V
-* K  -------------- GND (w/ 220-Ohm resistor)
-*/
-
 #ifndef MPU_H
 #define MPU_H
 
