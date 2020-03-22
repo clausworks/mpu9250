@@ -4,6 +4,9 @@ date: April 1, 2014
 license: Beerware - Use this code however you'd like. If you
 find it useful you can buy me a beer some time.
 
+Updated to class format by Nicholas Brunet, 03.21.2020.
+Using calibration functions by shubhampaul: bit.ly/33DZezm
+
 10k resistors are on the EMSENSR-9250 breakout board.
 
 Hardware setup:
@@ -40,6 +43,16 @@ We are also using the 400 kHz fast I2C mode by setting the TWI_FREQ  to 400000L 
 
 #ifndef MPU_H
 #define MPU_H
+
+// Using the MSENSR-9250 breakout board, ADO is set to 0
+// Seven-bit device address is 110100 for ADO = 0 and 110101 for ADO = 1
+#define ADO 1
+#if ADO
+#define MPU9250_ADDRESS 0x68  // Device address when ADO = 1
+#else
+#define MPU9250_ADDRESS 0x68  // Device address when ADO = 0
+#define AK8963_ADDRESS 0x0C   //  Address of magnetometer
+#endif
 
 
 // IMPORTANT: setting the LCD to true will cause the code to not compile.
@@ -170,6 +183,11 @@ public:
     void setupMPU();
     void updateMPU();
     float getYaw();
+    /*
+    Add more public member functions here as needed. For basic data reading,
+    simply add getter functions, as all calculations are performed in the
+    updateMPU() function.
+    */
 };
 
 #endif

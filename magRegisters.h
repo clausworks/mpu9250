@@ -1,4 +1,4 @@
-// See also MPU-9250 Register Map and Descriptions, Revision 4.0, RM-MPU-9250A-00, Rev. 1.4, 9/9/2013 for registers not listed in 
+// See also MPU-9250 Register Map and Descriptions, Revision 4.0, RM-MPU-9250A-00, Rev. 1.4, 9/9/2013 for registers not listed in
 // above document; the MPU9250 and MPU9150 are virtually identical but the latter has a different register map
 //
 //Magnetometer Registers
@@ -146,13 +146,3 @@
 #define YA_OFFSET_L      0x7B
 #define ZA_OFFSET_H      0x7D
 #define ZA_OFFSET_L      0x7E
-
-// Using the MSENSR-9250 breakout board, ADO is set to 0
-// Seven-bit device address is 110100 for ADO = 0 and 110101 for ADO = 1
-#define ADO 1
-#if ADO
-#define MPU9250_ADDRESS 0x68  // Device address when ADO = 1
-#else
-#define MPU9250_ADDRESS 0x68  // Device address when ADO = 0
-#define AK8963_ADDRESS 0x0C   //  Address of magnetometer
-#endif
