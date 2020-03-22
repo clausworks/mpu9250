@@ -43,21 +43,58 @@ We are also using the 400 kHz fast I2C mode by setting the TWI_FREQ  to 400000L 
 * A  -------------- 5V
 * K  -------------- GND (w/ 220-Ohm resistor)
 */
-
-#include <SPI.h>
-#include <Wire.h>
 #include <LiquidCrystal.h>
-
 LiquidCrystal lcd(3,4,5,6,7,8);
-
-
-
+// #include <SPI.h>
 #include "mpu.h"
 
+MPU myMPU = MPU();
+
+// global vars
+const int NUM_YAW_VALS = 5;
+float yawVals[NUM_YAW_VALS];
+unsigned int updateCounter = 0;
+
+// time
+long now = millis();
+long lastUpdate = millis();
+
 void setup() {
-    setupMPU();
+    lcd.begin(16,2);
+    Serial.begin(115200);
+    lcd.print("Setup...");
+    myMPU.setupMPU();
+    lcd.clear();
+    lcd.print("Done.");
+
+    // initialize yawVals
+    myMPU.updateMPU();
+    for (size_t i = 0; i < NUM_YAW_VALS; i++) {
+        yawVals[i] = myMPU.getYaw();
+    }
 }
 
+
 void loop() {
-    updateMPU();
+    now = millis();
+    myMPU.updateMPU();
+
+    // update 10 times every second
+    if (now - lastUpdate > 20) {
+        // Serial.print(myMPU.getYaw(),2);
+        // Serial.print("\t");
+
+        lastUpdate = now;
+        yawVals[updateCounter] = myMPU.getYaw(); // update one value
+
+        float sum = 0;
+        for (size_t i = 0; i < NUM_YAW_VALS; i++) {
+            sum += yawVals[i];
+        }
+        float avg = sum / NUM_YAW_VALS;
+        Serial.println(avg,2); // print average of last 5 values
+
+        ++updateCounter;
+        if (updateCounter == NUM_YAW_VALS) updateCounter = 0;
+    }
 }
