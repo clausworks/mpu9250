@@ -53,7 +53,6 @@ MPU myMPU = MPU();
 // global vars
 const int NUM_YAW_VALS = 10;
 float yawVals[NUM_YAW_VALS];
-float oldYawVals[NUM_YAW_VALS*5];
 unsigned int updateCounter = 0;
 
 // time
@@ -73,56 +72,47 @@ void setup() {
     myMPU.updateMPU();
     for (size_t i = 0; i < NUM_YAW_VALS; i++) {
         yawVals[i] = myMPU.getYaw();
-        oldYawVals[i] = myMPU.getYaw();
     }
 }
 
-
+int desiredYaw = 90;
 void loop() {
     now = millis();
     myMPU.updateMPU();
-    int curAvg, oldAvg;
 
-    // update 10 times every second
+    float avg;
     if (now - lastUpdate_50 > 50) {
         lastUpdate_50 = now;
-        // Serial.print(myMPU.getYaw(),2);
-        // Serial.print("\t");
 
-        oldYawVals[updateCounter] = yawVals[updateCounter]; // copy oldest value
         yawVals[updateCounter] = myMPU.getYaw(); // update one value
 
-        curAvg = round(calcAvg(yawVals, NUM_YAW_VALS));
-        oldAvg = round(calcAvg(oldYawVals, NUM_YAW_VALS));
+        float sum = 0;
+        for (size_t i = 0; i < NUM_YAW_VALS; i++) {
+            sum += yawVals[i];
+        }
+        avg = round(sum / NUM_YAW_VALS);
 
-        lcd.clear();
-        if ((abs(curAvg-oldAvg)%360) < 10) {
-            lcd.print("Not turning");
+        int deltaTheta = desiredYaw - avg;
+
+        // check if target reached
+        if (abs(deltaTheta) > 15) {
+            tone(9, 500+deltaTheta);
+        }
+        else if (abs(deltaTheta) < 2) {
+                tone(9,1000);
         }
         else {
-            lcd.print("Turning");
+            noTone(9);
         }
-
-        Serial.println(curAvg);
+        lcd.clear();
+        lcd.print(avg);
+        lcd.setCursor(0,1);
+        lcd.print(deltaTheta);
+        Serial.println(avg);
         Serial.print("\t");
-        Serial.println(abs(curAvg-oldAvg)%360);
+        Serial.println(deltaTheta);
 
         ++updateCounter;
         if (updateCounter == NUM_YAW_VALS) updateCounter = 0;
     }
-
-    // if (now - lastUpdate_500 > 500) {
-    //     lastUpdate_500 = now;
-    //     oldAvg = curAvg; // update only every 1/2 second
-    // }
-}
-
-
-
-float calcAvg(float nums[], int numItems) {
-    float sum = 0;
-    for (size_t i = 0; i < numItems; i++) {
-        sum += nums[i];
-    }
-    return sum / numItems;
 }

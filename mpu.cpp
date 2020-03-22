@@ -1,7 +1,6 @@
 #include "mpu.h"
 #include <Arduino.h>
 #include <Wire.h>
-// #include <LiquidCrystal.h>
 
 //===================================================================================================================
 //====== Set of useful function to access acceleration. gyroscope, magnetometer, and temperature data

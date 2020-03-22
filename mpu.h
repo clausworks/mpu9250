@@ -41,6 +41,10 @@ We are also using the 400 kHz fast I2C mode by setting the TWI_FREQ  to 400000L 
 #ifndef MPU_H
 #define MPU_H
 
+
+// IMPORTANT: setting the LCD to true will cause the code to not compile.
+//            Instead, create public member functions and print data to the LCD
+//            from the main .ino file.
 #define VERBOSE false
 #define LCD_ON false
 
