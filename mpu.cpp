@@ -932,6 +932,7 @@ void MPU::readBytes(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t 
             roll  = atan2(2.0f * (q[0] * q[1] + q[2] * q[3]), q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]);
             pitch *= 180.0f / PI;
             yaw   *= 180.0f / PI;
+            yaw   += 180.0f;
             yaw   += 12.0;          // Declination at Lancaster, CA
             roll  *= 180.0f / PI;
 

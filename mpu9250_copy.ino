@@ -51,13 +51,15 @@ LiquidCrystal lcd(3,4,5,6,7,8);
 MPU myMPU = MPU();
 
 // global vars
-const int NUM_YAW_VALS = 5;
+const int NUM_YAW_VALS = 10;
 float yawVals[NUM_YAW_VALS];
+float oldYawVals[NUM_YAW_VALS*5];
 unsigned int updateCounter = 0;
 
 // time
 long now = millis();
-long lastUpdate = millis();
+long lastUpdate_50 = millis();
+long lastUpdate_500 = millis();
 
 void setup() {
     lcd.begin(16,2);
@@ -71,6 +73,7 @@ void setup() {
     myMPU.updateMPU();
     for (size_t i = 0; i < NUM_YAW_VALS; i++) {
         yawVals[i] = myMPU.getYaw();
+        oldYawVals[i] = myMPU.getYaw();
     }
 }
 
@@ -78,23 +81,48 @@ void setup() {
 void loop() {
     now = millis();
     myMPU.updateMPU();
+    int curAvg, oldAvg;
 
     // update 10 times every second
-    if (now - lastUpdate > 20) {
+    if (now - lastUpdate_50 > 50) {
+        lastUpdate_50 = now;
         // Serial.print(myMPU.getYaw(),2);
         // Serial.print("\t");
 
-        lastUpdate = now;
+        oldYawVals[updateCounter] = yawVals[updateCounter]; // copy oldest value
         yawVals[updateCounter] = myMPU.getYaw(); // update one value
 
-        float sum = 0;
-        for (size_t i = 0; i < NUM_YAW_VALS; i++) {
-            sum += yawVals[i];
+        curAvg = round(calcAvg(yawVals, NUM_YAW_VALS));
+        oldAvg = round(calcAvg(oldYawVals, NUM_YAW_VALS));
+
+        lcd.clear();
+        if ((abs(curAvg-oldAvg)%360) < 10) {
+            lcd.print("Not turning");
         }
-        float avg = sum / NUM_YAW_VALS;
-        Serial.println(avg,2); // print average of last 5 values
+        else {
+            lcd.print("Turning");
+        }
+
+        Serial.println(curAvg);
+        Serial.print("\t");
+        Serial.println(abs(curAvg-oldAvg)%360);
 
         ++updateCounter;
         if (updateCounter == NUM_YAW_VALS) updateCounter = 0;
     }
+
+    // if (now - lastUpdate_500 > 500) {
+    //     lastUpdate_500 = now;
+    //     oldAvg = curAvg; // update only every 1/2 second
+    // }
+}
+
+
+
+float calcAvg(float nums[], int numItems) {
+    float sum = 0;
+    for (size_t i = 0; i < numItems; i++) {
+        sum += nums[i];
+    }
+    return sum / numItems;
 }
